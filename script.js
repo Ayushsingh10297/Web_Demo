@@ -187,3 +187,18 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
 });
+
+// Handle navigation via hash (e.g., #about)
+window.addEventListener("DOMContentLoaded", () => {
+    const hash = window.location.hash.substring(1); // remove the #
+    if (hash) {
+        const targetLink = document.querySelector(`.nav-links a[data-page="${hash}"]`);
+        if (targetLink) {
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.querySelectorAll(".nav-links a").forEach(link => link.classList.remove("active"));
+
+            document.getElementById(hash).classList.add("page", "active");
+            targetLink.classList.add("active");
+        }
+    }
+});
