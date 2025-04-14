@@ -23,6 +23,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentFile = null;
 
+    // Handle navigation via hash (e.g., #about)
+    const hash = window.location.hash.substring(1); // remove the #
+    if (hash) {
+        const targetLink = document.querySelector(`.nav-links a[data-page="${hash}"]`);
+        if (targetLink) {
+            pages.forEach(p => p.classList.remove("active"));
+            navLinks.forEach(link => link.classList.remove("active"));
+            document.getElementById(hash).classList.add("active");
+            targetLink.classList.add("active");
+        }
+    }
+
     // Navigation
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -33,6 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const page = this.getAttribute('data-page');
             document.getElementById(page).classList.add('active');
             navLinksContainer.classList.remove('active');
+
+            // Update the URL hash to persist the state
+            window.location.hash = page;
         });
     });
 
@@ -80,22 +95,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData();
         formData.append('musicFile', file);
-        
 
         try {
-            console.log('Sending request to server...');
             const response = await fetch('http://127.0.0.1:5000/predict', {
                 method: 'POST',
                 body: formData
             });
-            console.log('Response status:', response.status);  // Log the response status
+
             if (!response.ok) {
                 showToast("Server error occurred. Please try again.");
                 return;
             }
-            console.log('Response received from server.');
+
             const data = await response.json();
-            console.log('Response:', data);  // Log the result to check if it's correct
 
             if (data.genre) {
                 genreResult.textContent = data.genre;
@@ -185,20 +197,5 @@ document.addEventListener('DOMContentLoaded', function() {
         progress.style.transition = 'width 3s linear';
         setTimeout(() => { progress.style.width = '0%'; }, 100);
         setTimeout(() => { toast.classList.remove('show'); }, 3000);
-    }
-});
-
-// Handle navigation via hash (e.g., #about)
-window.addEventListener("DOMContentLoaded", () => {
-    const hash = window.location.hash.substring(1); // remove the #
-    if (hash) {
-        const targetLink = document.querySelector(`.nav-links a[data-page="${hash}"]`);
-        if (targetLink) {
-            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-            document.querySelectorAll(".nav-links a").forEach(link => link.classList.remove("active"));
-
-            document.getElementById(hash).classList.add("page", "active");
-            targetLink.classList.add("active");
-        }
     }
 });
